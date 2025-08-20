@@ -1,9 +1,20 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
+type StatsType = 'followers' | 'following';
 
-const initialState = {
+type StateProps = {
+    followers: number;
+    following: number;
+};
+
+type ChangeStatsPayload = {
+    statsType: StatsType;
+    sum: number;
+};
+
+const initialState: StateProps = {
     followers: 0,
-    following: 0
+    following: 0,
 };
 
 const statsSlice = createSlice({
@@ -11,17 +22,16 @@ const statsSlice = createSlice({
     initialState,
     reducers: {
         changeStats: {
-            reducer: (state, action) => {
-                const res = state[action.payload.statsType] + action.payload.sum;
-                state[action.payload.statsType] = res >= 0 ? res : 0
+            reducer: (state, action: PayloadAction<ChangeStatsPayload>) => {
+                const { statsType, sum } = action.payload;
+                const updatedValue = state[statsType] + sum;
+                state[statsType] = updatedValue >= 0 ? updatedValue : 0;
             },
-            prepare: (statsType, sum) => ({payload: {statsType, sum}})
-        }
-    }
-
-
-
-
+            prepare: (statsType: StatsType, sum: number) => ({
+                payload: { statsType, sum }
+            }),
+        },
+    },
 });
 
 export const { changeStats } = statsSlice.actions;
